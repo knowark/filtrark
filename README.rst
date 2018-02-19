@@ -6,8 +6,8 @@ Filtrark
 .. image:: https://img.shields.io/pypi/v/filtrark.svg
         :target: https://pypi.python.org/pypi/filtrark
 
-.. image:: https://img.shields.io/travis/eecheverry/filtrark.svg
-        :target: https://travis-ci.org/eecheverry/filtrark
+.. image:: https://img.shields.io/travis/nubark/filtrark.svg
+        :target: https://travis-ci.org/nubark/filtrark
 
 .. image:: https://readthedocs.org/projects/filtrark/badge/?version=latest
         :target: https://filtrark.readthedocs.io/en/latest/?badge=latest
