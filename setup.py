@@ -30,7 +30,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Esteban Echeverry",
     author_email='eecheverry@nubark.com',
-    url='https://github.com/eecheverry/filtrark',
+    url='https://github.com/nubark/filtrark',
     packages=find_packages(include=['filtrark']),
     include_package_data=True,
     install_requires=requirements,
