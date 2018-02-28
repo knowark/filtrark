@@ -5,6 +5,8 @@ TermTuple = NewType('TermTuple', Tuple[str, str, Union[str, float]])
 
 class Filtrark:
     def __init__(self) -> None:
+        # self.
+
         self.term_operators = {
             '=': '=', '!=': '<>', '<=': '<=', '<': '<',
             '>': '>', '>=': '>=', 'in': 'in'}
