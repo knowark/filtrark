@@ -4,7 +4,6 @@ from filtrark.string_parser import StringParser
 from filtrark.operator_group import DefaultOperatorGroup
 
 
-@unittest.skip("TEMP")
 class TestStringParser(unittest.TestCase):
     """Tests for StringParser"""
 

@@ -26,7 +26,7 @@ class StringParser:
 
             stack = self._default_join(stack)
 
-            if isinstance(item, tuple):
+            if isinstance(item, (list, tuple)):
                 result = str(self._parse_term(item))
                 stack.append(result)
 
