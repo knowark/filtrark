@@ -6,23 +6,36 @@ TermTuple = NewType('TermTuple', Tuple[str, str, Union[str, float]])
 
 class ExpressionParser:
     def __init__(self) -> None:
-        def expected(obj): getattr(obj, 'field') == 99
         self.comparison_dict = {
             '=': lambda field, value: (
                 lambda obj: getattr(obj, field) == value),
-            '!=': lambda x, y: ' <> '.join([str(x), str(y)]),
-            '<=': lambda x, y: ' <= '.join([str(x), str(y)]),
-            '<': lambda x, y: ' < '.join([str(x), str(y)]),
-            '>': lambda x, y: ' > '.join([str(x), str(y)]),
-            '>=': lambda x, y: ' >= '.join([str(x), str(y)]),
-            'in': lambda x, y: ' in '.join([str(x), str(y)])}
+            '!=': lambda field, value: (
+                lambda obj: getattr(obj, field) != value),
+            '<=': lambda field, value: (
+                lambda obj: getattr(obj, field) <= value),
+            '<': lambda field, value: (
+                lambda obj: getattr(obj, field) < value),
+            '>': lambda field, value: (
+                lambda obj: getattr(obj, field) > value),
+            '>=': lambda field, value: (
+                lambda obj: getattr(obj, field) >= value),
+            'in': lambda field, value: (
+                lambda obj: getattr(obj, field) in value),
+        }
 
         self.binary_dict = {
-            '&': lambda a, b: a + ' AND ' + b,
-            '|': lambda a, b: a + ' OR ' + b}
+            '&': lambda expression_1, expression_2: (
+                lambda obj: (expression_1(obj) and expression_2(obj))),
+            '|': lambda expression_1, expression_2: (
+                lambda obj: (expression_1(obj) or expression_2(obj)))
+        }
 
         self.unary_dict = {
-            '!': lambda a: 'NOT ' + a}
+            '!': lambda expression_1: (
+                lambda obj: (not expression_1(obj)))
+        }
+
+        self.default_join_operator = '&'
 
     def parse(self, domain: List[Union[str, TermTuple]]) -> Callable:
         stack = []  # type: List[Callable]
@@ -30,15 +43,12 @@ class ExpressionParser:
             if item in self.binary_dict:
                 first_operand = stack.pop()
                 second_operand = stack.pop()
-                string_term = str(
-                    self.binary_dict[str(item)](
-                        first_operand, second_operand))
-                stack.append(string_term)
+                function = self.binary_dict[str(item)](
+                    first_operand, second_operand)
+                stack.append(function)
             elif item in self.unary_dict:
                 operand = stack.pop()
-                stack.append(
-                    str(self.unary_dict[str(item)](
-                        operand)))
+                stack.append(self.unary_dict[str(item)](operand))
 
             stack = self._default_join(stack)
 
@@ -49,13 +59,14 @@ class ExpressionParser:
         result = self._default_join(stack)[0]
         return result
 
-    def _default_join(self, stack: List[str]) -> List[str]:
+    def _default_join(self, stack: List[str]) -> List[Callable]:
+        operator = self.default_join_operator
         if len(stack) == 2:
             first_operand = stack.pop()
             second_operand = stack.pop()
-            value = str(self.binary_dict['&'](
-                str(first_operand), str(second_operand)))
-            stack.append(value)
+            function = self.binary_dict[operator](
+                first_operand, second_operand)
+            stack.append(function)
         return stack
 
     def _parse_term(self, term_tuple: TermTuple) -> Union[bool, str]:
