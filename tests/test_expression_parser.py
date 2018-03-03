@@ -2,11 +2,9 @@ import unittest
 from unittest.mock import Mock
 
 from filtrark.expression_parser import ExpressionParser
-from filtrark.operator_group import DefaultOperatorGroup
 
 
 class TestExpressionParser(unittest.TestCase):
-    """Tests for `filtrark` package."""
 
     def setUp(self):
         self.parser = ExpressionParser()

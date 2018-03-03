@@ -1,13 +1,10 @@
 from typing import NewType, List, Tuple, Union
-from filtrark.operator_group import OperatorGroup
 
 TermTuple = NewType('TermTuple', Tuple[str, str, Union[str, float]])
 
 
 class StringParser:
-    def __init__(self, operator_group: OperatorGroup) -> None:
-        self.operator_group = operator_group
-
+    def __init__(self) -> None:
         self.comparison_dict = {
             '=': lambda x, y:  ' = '.join([str(x), str(y)]),
             '!=': lambda x, y: ' <> '.join([str(x), str(y)]),

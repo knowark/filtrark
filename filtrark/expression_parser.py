@@ -1,5 +1,4 @@
 from typing import NewType, List, Tuple, Union, Callable
-from filtrark.operator_group import OperatorGroup
 
 TermTuple = NewType('TermTuple', Tuple[str, str, Union[str, float]])
 

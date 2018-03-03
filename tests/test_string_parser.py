@@ -1,22 +1,14 @@
 import unittest
 
 from filtrark.string_parser import StringParser
-from filtrark.operator_group import DefaultOperatorGroup
 
 
 class TestStringParser(unittest.TestCase):
-    """Tests for StringParser"""
 
     def setUp(self):
-        """Set up test fixtures, if any."""
-        self.operator_group = DefaultOperatorGroup() 
-        self.parser = StringParser(self.operator_group)
-
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
+        self.parser = StringParser()
 
     def test_string_parser_object_creation(self):
-        """Test something."""
         self.assertTrue(isinstance(self.parser, StringParser))
 
     def test_string_parser_parse_tuple(self):
