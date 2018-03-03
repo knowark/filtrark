@@ -1,6 +1,5 @@
-from typing import NewType, List, Tuple, Union
-
-TermTuple = NewType('TermTuple', Tuple[str, str, Union[str, float]])
+from typing import List, Union
+from .type_definitions import TermTuple
 
 
 class StringParser:

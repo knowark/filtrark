@@ -1,6 +1,5 @@
-from typing import NewType, List, Tuple, Union, Callable
-
-TermTuple = NewType('TermTuple', Tuple[str, str, Union[str, float]])
+from typing import List, Union, Callable
+from .type_definitions import TermTuple
 
 
 class ExpressionParser:
@@ -70,9 +69,6 @@ class ExpressionParser:
 
     def _parse_term(self, term_tuple: TermTuple) -> Callable:
         field, operator, value = term_tuple
-
         function = self.comparison_dict.get(operator)
-
         result = function(field, value)
-
         return result
