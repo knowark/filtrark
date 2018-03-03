@@ -58,7 +58,7 @@ class ExpressionParser:
         result = self._default_join(stack)[0]
         return result
 
-    def _default_join(self, stack: List[str]) -> List[Callable]:
+    def _default_join(self, stack: List[Callable]) -> List[Callable]:
         operator = self.default_join_operator
         if len(stack) == 2:
             first_operand = stack.pop()
@@ -68,7 +68,7 @@ class ExpressionParser:
             stack.append(function)
         return stack
 
-    def _parse_term(self, term_tuple: TermTuple) -> Union[bool, str]:
+    def _parse_term(self, term_tuple: TermTuple) -> Callable:
         field, operator, value = term_tuple
 
         function = self.comparison_dict.get(operator)
