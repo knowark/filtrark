@@ -8,20 +8,39 @@ class StringParser:
     def __init__(self, operator_group: OperatorGroup) -> None:
         self.operator_group = operator_group
 
+        self.comparison_dict = {
+            '=': lambda x, y:  ' = '.join([str(x), str(y)]),
+            '!=': lambda x, y: ' <> '.join([str(x), str(y)]),
+            '<=': lambda x, y: ' <= '.join([str(x), str(y)]),
+            '<': lambda x, y: ' < '.join([str(x), str(y)]),
+            '>': lambda x, y: ' > '.join([str(x), str(y)]),
+            '>=': lambda x, y: ' >= '.join([str(x), str(y)]),
+            'in': lambda x, y: ' in '.join([str(x), str(y)])
+        }
+
+        self.binary_dict = {
+            '&': lambda a, b: a + ' AND ' + b,
+            '|': lambda a, b: a + ' OR ' + b}
+
+        self.unary_dict = {
+            '!': lambda a: 'NOT ' + a}
+
+        self.default_join_operator = '&'
+
     def parse(self, domain: List[Union[str, TermTuple]]) -> str:
         stack = []  # type: List[str]
         for item in list(reversed(domain)):
-            if item in self.operator_group.binary_operators():
+            if item in self.binary_dict:
                 first_operand = stack.pop()
                 second_operand = stack.pop()
                 string_term = str(
-                    self.operator_group.binary_operators()[str(item)](
+                    self.binary_dict[str(item)](
                         first_operand, second_operand))
                 stack.append(string_term)
-            elif item in self.operator_group.unary_operators():
+            elif item in self.unary_dict:
                 operand = stack.pop()
                 stack.append(
-                    str(self.operator_group.unary_operators()[str(item)](
+                    str(self.unary_dict[str(item)](
                         operand)))
 
             stack = self._default_join(stack)
@@ -33,21 +52,18 @@ class StringParser:
         result = str(self._default_join(stack)[0])
         return result
 
-    def expression(self):
-        pass
-
-    def _default_join(self, stack: List[str]
-                      ) -> List[str]:
+    def _default_join(self, stack: List[str]) -> List[str]:
+        operator = self.default_join_operator
         if len(stack) == 2:
             first_operand = stack.pop()
             second_operand = stack.pop()
-            value = str(self.operator_group.binary_operators()['&'](
+            value = str(self.binary_dict[operator](
                 str(first_operand), str(second_operand)))
             stack.append(value)
         return stack
 
     def _parse_term(self, term_tuple: TermTuple) -> Union[bool, str]:
         field, operator, value = term_tuple
-        function = self.operator_group.comparison_operators().get(operator)
+        function = self.comparison_dict.get(operator)
         result = function(field, value)
         return result
