@@ -25,7 +25,7 @@ test_requirements = [
 
 setup(
     name='filtrark',
-    version='0.1.0',
+    version='0.2.0',
     description="Build filter clauses from instruction lists",
     long_description=readme + '\n\n' + history,
     author="Esteban Echeverry",
