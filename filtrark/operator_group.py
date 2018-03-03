@@ -61,3 +61,36 @@ class SqlOperatorGroup(OperatorGroup):
 
 
 DefaultOperatorGroup = SqlOperatorGroup
+
+
+class ExpressionOperatorGroup(OperatorGroup):
+
+    def __init__(self):
+        self.comparison_dict = {
+            '=': lambda x, y:  ' = '.join([str(x), str(y)]),
+            '!=': lambda x, y: ' <> '.join([str(x), str(y)]),
+            '<=': lambda x, y: ' <= '.join([str(x), str(y)]),
+            '<': lambda x, y: ' < '.join([str(x), str(y)]),
+            '>': lambda x, y: ' > '.join([str(x), str(y)]),
+            '>=': lambda x, y: ' >= '.join([str(x), str(y)]),
+            'in': lambda x, y: ' in '.join([str(x), str(y)]),
+        }
+
+        self.binary_dict = {
+            '&': lambda a, b: a + ' AND ' + b,
+            '|': lambda a, b: a + ' OR ' + b}
+
+        self.unary_dict = {
+            '!': lambda a: 'NOT ' + a}
+
+    def comparison_operators(self) -> Dict[str, ComparisonExpression]:
+        """Return the group's binary operators"""
+        return self.comparison_dict
+
+    def unary_operators(self) -> Dict[str, UnaryLogicalExpression]:
+        """Return the group's binary operators"""
+        return self.unary_dict
+
+    def binary_operators(self) -> Dict[str, BinaryLogicalExpression]:
+        """Return the group's binary operators"""
+        return self.binary_dict
