@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.1 UNRELEASED
+----------------
+
+* Increase test coverage for comparison operators
+
 0.2.0 (2018-03-03)
 ------------------
 

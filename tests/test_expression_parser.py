@@ -13,22 +13,28 @@ class TestExpressionParser(unittest.TestCase):
         self.assertTrue(isinstance(self.parser, ExpressionParser))
 
     def test_expression_parser_parse_tuple(self):
-        filter_tuple = ('field', '=', 99)
+        filter_tuple_list = [
+            (('field', '=', 9), lambda obj: obj.field == 9, Mock(field=9)),
+            (('field', '!=', 9), lambda obj: obj.field != 9, Mock(field=8)),
+            (('field', '>', 9), lambda obj: obj.field > 9, Mock(field=10)),
+            (('field', '<', 9), lambda obj: obj.field < 9, Mock(field=8)),
+            (('field', '<=', 9), lambda obj: obj.field <= 9, Mock(field=8)),
+            (('field', '>=', 9), lambda obj: obj.field >= 9, Mock(field=10)),
+            (('field', 'in', [1, 2, 3]), lambda obj: obj.field in [1, 2, 3],
+             Mock(field=2)),
+        ]
 
-        def expected(obj):
-            return getattr(obj, 'field') == 99
+        for test_tuple in filter_tuple_list:
+            filter_tuple = test_tuple[0]
+            expected_function = test_tuple[1]
+            mock_object = test_tuple[2]
 
-        mock_object = Mock()
-        mock_object.field = 99
+            function = self.parser._parse_term(filter_tuple)
 
-        function = self.parser._parse_term(filter_tuple)
-
-        self.assertTrue(callable(function))
-        self.assertTrue(function(mock_object))
-        self.assertEqual(function(mock_object), expected(mock_object))
-
-        mock_object.field = 87
-        self.assertFalse(function(mock_object))
+            self.assertTrue(callable(function))
+            self.assertTrue(function(mock_object))
+            self.assertEqual(
+                function(mock_object), expected_function(mock_object))
 
     def test_expression_parser_parse_single_term(self):
         domain = [('field', '=', 7)]
