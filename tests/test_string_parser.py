@@ -54,3 +54,9 @@ class TestStringParser(unittest.TestCase):
         result = self.parser.parse(domain)
         expected = "TRUE"
         self.assertEqual(result, expected)
+
+    def test_string_parser_with_lists_of_lists(self):
+        domain = [['field', '=', '7'], ['field2', '!=', '8']]
+        expected = 'field = 7 AND field2 <> 8'
+        result = self.parser.parse(domain)
+        self.assertEqual(result, expected)

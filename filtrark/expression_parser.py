@@ -41,13 +41,13 @@ class ExpressionParser:
             return lambda obj: True
         stack = []  # type: List[Callable]
         for item in list(reversed(domain)):
-            if item in self.binary_dict:
+            if isinstance(item, str) and item in self.binary_dict:
                 first_operand = stack.pop()
                 second_operand = stack.pop()
                 function = self.binary_dict[str(item)](
                     first_operand, second_operand)
                 stack.append(function)
-            elif item in self.unary_dict:
+            elif isinstance(item, str) and item in self.unary_dict:
                 operand = stack.pop()
                 stack.append(self.unary_dict[str(item)](operand))
 

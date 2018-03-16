@@ -29,14 +29,14 @@ class StringParser:
             return "TRUE"
         stack = []  # type: List[str]
         for item in list(reversed(domain)):
-            if item in self.binary_dict:
+            if isinstance(item, str) and item in self.binary_dict:
                 first_operand = stack.pop()
                 second_operand = stack.pop()
                 string_term = str(
                     self.binary_dict[str(item)](
                         first_operand, second_operand))
                 stack.append(string_term)
-            elif item in self.unary_dict:
+            elif isinstance(item, str) and item in self.unary_dict:
                 operand = stack.pop()
                 stack.append(
                     str(self.unary_dict[str(item)](
