@@ -3,6 +3,7 @@ from .type_definitions import TermTuple
 
 
 class ExpressionParser:
+
     def __init__(self) -> None:
         self.comparison_dict = {
             '=': lambda field, value: (
@@ -36,6 +37,8 @@ class ExpressionParser:
         self.default_join_operator = '&'
 
     def parse(self, domain: List[Union[str, TermTuple]]) -> Callable:
+        if not domain:
+            return lambda obj: True
         stack = []  # type: List[Callable]
         for item in list(reversed(domain)):
             if item in self.binary_dict:

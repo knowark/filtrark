@@ -103,3 +103,10 @@ class TestExpressionParser(unittest.TestCase):
             obj = test_domain[2]
             self.assertTrue(callable(result))
             self.assertEqual(result(obj), expected(obj))
+
+    def test_expression_parser_with_empty_list(self):
+        domain = []
+        result = self.parser.parse(domain)
+        mock_object = Mock()
+        mock_object.field = 7
+        self.assertTrue(result(mock_object))

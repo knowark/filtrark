@@ -3,6 +3,7 @@ from .type_definitions import TermTuple
 
 
 class StringParser:
+
     def __init__(self) -> None:
         self.comparison_dict = {
             '=': lambda x, y:  ' = '.join([str(x), str(y)]),
@@ -24,6 +25,8 @@ class StringParser:
         self.default_join_operator = '&'
 
     def parse(self, domain: List[Union[str, TermTuple]]) -> str:
+        if not domain:
+            return "TRUE"
         stack = []  # type: List[str]
         for item in list(reversed(domain)):
             if item in self.binary_dict:
