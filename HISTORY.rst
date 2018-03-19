@@ -2,6 +2,12 @@
 History
 =======
 
+0.3.0 (2018-03-19)
+------------------
+
+* Implement 'sql' command returning a (query, params) tuple
+* Remove single quote handling in string parser
+
 0.2.1 (2018-03-19)
 ------------------
 

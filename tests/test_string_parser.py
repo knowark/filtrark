@@ -60,4 +60,3 @@ class TestStringParser(unittest.TestCase):
         expected = 'field = 7 AND field2 <> 8'
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
-
