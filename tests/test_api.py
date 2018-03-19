@@ -21,4 +21,10 @@ class TestApi(unittest.TestCase):
         def expected(obj):
             return obj.field == 5 and obj.field2 == 4
 
-        self.assertEqual(function(self.mock_object), expected(self.mock_object))
+        self.assertEqual(function(self.mock_object),
+                         expected(self.mock_object))
+
+    def test_api_sql(self):
+        result = filtrark.sql(self.domain)
+        expected = ('field = %s AND field2 = %s', (5, 4))
+        self.assertEqual(result, expected)

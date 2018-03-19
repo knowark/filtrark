@@ -7,4 +7,4 @@ __email__ = 'eecheverry@nubark.com'
 __version__ = '0.2.1'
 
 
-from .api import string, expression
+from .api import string, expression, sql
