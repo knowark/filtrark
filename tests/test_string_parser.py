@@ -61,14 +61,3 @@ class TestStringParser(unittest.TestCase):
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
 
-    def test_string_parser_with_string_value(self):
-        domain = [['name', '=', 'Michael'], ['age', '>', 8]]
-        expected = "name = 'Michael' AND age > 8"
-        result = self.parser.parse(domain)
-        self.assertEqual(result, expected)
-
-    def test_string_parser_with_quoted_string_value(self):
-        domain = [['name', '=', "Pacco's"]]
-        expected = "name = 'Pacco''s'"
-        result = self.parser.parse(domain)
-        self.assertEqual(result, expected)
