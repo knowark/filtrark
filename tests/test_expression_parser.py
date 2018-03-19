@@ -57,7 +57,6 @@ class TestExpressionParser(unittest.TestCase):
 
     def test_expression_parser_default_join(self):
         stack = [lambda obj: obj.field2 != 8, lambda obj: obj.field == 7]
-        expected = 'field = 7 AND field2 <> 8'
 
         def expected(obj):
             return (obj.field == 7 and obj.field2 != 8)
@@ -103,3 +102,25 @@ class TestExpressionParser(unittest.TestCase):
             obj = test_domain[2]
             self.assertTrue(callable(result))
             self.assertEqual(result(obj), expected(obj))
+
+    def test_expression_parser_with_empty_list(self):
+        domain = []
+        result = self.parser.parse(domain)
+        mock_object = Mock()
+        mock_object.field = 7
+        self.assertTrue(result(mock_object))
+
+    def test_string_parser_with_lists_of_lists(self):
+        domain = [['field', '=', 7], ['field2', '!=', 8]]
+
+        def expected(obj):
+            return (obj.field == 7 and obj.field2 != 8)
+
+        result = self.parser.parse(domain)
+
+        mock_object = Mock()
+        mock_object.field = 7
+        mock_object.field2 = 9
+
+        self.assertTrue(result(mock_object))
+        self.assertEqual(result(mock_object), expected(mock_object))

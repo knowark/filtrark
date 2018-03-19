@@ -35,8 +35,9 @@ class TestStringParser(unittest.TestCase):
              'field = 7 AND field2 <> 8'),
             ([('field', '=', 7), ('field2', '!=', 8), ('field3', '>=', 9)],
              'field = 7 AND field2 <> 8 AND field3 >= 9'),
-            (['|', ('field', '=', 7), ('field2', '!=', 8), ('field3', '>=', 9)],
-             'field = 7 OR field2 <> 8 AND field3 >= 9'),
+            (['|', ('field', '=', 7), ('field2', '!=', 8),
+              ('field3', '>=', 9)],
+                'field = 7 OR field2 <> 8 AND field3 >= 9'),
             (['|', ('field', '=', 7),
               '!', ('field2', '!=', 8), ('field3', '>=', 9)],
              'field = 7 OR NOT field2 <> 8 AND field3 >= 9'),
@@ -47,3 +48,15 @@ class TestStringParser(unittest.TestCase):
             result = self.parser.parse(test_domain[0])
             expected = test_domain[1]
             self.assertEqual(result, expected)
+
+    def test_string_parser_with_empty_list(self):
+        domain = []
+        result = self.parser.parse(domain)
+        expected = "TRUE"
+        self.assertEqual(result, expected)
+
+    def test_string_parser_with_lists_of_lists(self):
+        domain = [['field', '=', '7'], ['field2', '!=', '8']]
+        expected = 'field = 7 AND field2 <> 8'
+        result = self.parser.parse(domain)
+        self.assertEqual(result, expected)
