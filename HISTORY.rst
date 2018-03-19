@@ -6,6 +6,8 @@ History
 ----------------
 
 * Increase test coverage for comparison operators
+* Fix parse error when given a list of lists domain
+* Quote (') string values in string parser (for SQL clauses)
 
 0.2.0 (2018-03-03)
 ------------------
