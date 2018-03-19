@@ -2,8 +2,8 @@
 History
 =======
 
-0.2.1 UNRELEASED
-----------------
+0.2.1 (2018-03-19)
+------------------
 
 * Increase test coverage for comparison operators
 * Fix parse error when given a list of lists domain
