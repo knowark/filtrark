@@ -63,6 +63,8 @@ class StringParser:
 
     def _parse_term(self, term_tuple: TermTuple) -> Union[bool, str]:
         field, operator, value = term_tuple
+        if isinstance(value, str):
+            value = "'{}'".format(value)
         function = self.comparison_dict.get(operator)
         result = function(field, value)
         return result
