@@ -12,10 +12,13 @@ class TestStringParser(unittest.TestCase):
         self.assertTrue(isinstance(self.parser, StringParser))
 
     def test_string_parser_parse_tuple(self):
-        filter_tuple = ('field', '=', 99)
-        expected = 'field = 99'
-        result = self.parser._parse_term(filter_tuple)
-        self.assertEqual(result, expected)
+        filter_tuple_list = [
+            (('field', '=', 99), 'field = 99'),
+            (('field', 'ilike', 'world'), "field ilike '%world%'")
+        ]
+        for filter_tuple, expected in filter_tuple_list:
+            result = self.parser._parse_term(filter_tuple)
+            self.assertEqual(result, expected)
 
     def test_string_parser_parse_single_term(self):
         domain = [('field', '=', 7)]
