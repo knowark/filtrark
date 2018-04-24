@@ -20,6 +20,9 @@ class ExpressionParser:
                 lambda obj: getattr(obj, field) >= value),
             'in': lambda field, value: (
                 lambda obj: getattr(obj, field) in value),
+            'ilike': lambda field, value: (
+                lambda obj: (
+                    str(value).lower() in str(getattr(obj, field)).lower()))
         }
 
         self.binary_dict = {

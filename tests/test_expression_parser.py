@@ -22,6 +22,9 @@ class TestExpressionParser(unittest.TestCase):
             (('field', '>=', 9), lambda obj: obj.field >= 9, Mock(field=10)),
             (('field', 'in', [1, 2, 3]), lambda obj: obj.field in [1, 2, 3],
              Mock(field=2)),
+            (('field', 'ilike', "woRLd"), (
+                lambda obj: "world".lower() in str(obj.field).lower()),
+                Mock(field="Hello world!")),
         ]
 
         for test_tuple in filter_tuple_list:
