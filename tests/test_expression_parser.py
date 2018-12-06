@@ -1,4 +1,5 @@
 import unittest
+from fnmatch import fnmatchcase
 from unittest.mock import Mock
 
 from filtrark.expression_parser import ExpressionParser
@@ -21,17 +22,13 @@ class TestExpressionParser(unittest.TestCase):
             (('field', '<=', 9), lambda obj: obj.field <= 9, Mock(field=8)),
             (('field', '>=', 9), lambda obj: obj.field >= 9, Mock(field=10)),
             (('field', 'in', [1, 2, 3]), lambda obj: obj.field in [1, 2, 3],
-             Mock(field=2)),
-            (('field', 'ilike', "woRLd"), (
-                lambda obj: "world".lower() in str(obj.field).lower()),
-                Mock(field="Hello world!")),
+             Mock(field=2))
         ]
 
         for test_tuple in filter_tuple_list:
             filter_tuple = test_tuple[0]
             expected_function = test_tuple[1]
             mock_object = test_tuple[2]
-
             function = self.parser._parse_term(filter_tuple)
 
             self.assertTrue(callable(function))
@@ -127,3 +124,38 @@ class TestExpressionParser(unittest.TestCase):
 
         self.assertTrue(result(mock_object))
         self.assertEqual(result(mock_object), expected(mock_object))
+
+    def test_expression_parser_parse_like(self):
+        filter_tuple_list = [
+            (('field', 'like', "Hello"),
+             lambda obj: fnmatchcase(obj.field, "Hello"),
+             Mock(field="Hello")),
+            (('field', 'like', "Hello%"),
+             lambda obj: fnmatchcase(obj.field, "Hello*"),
+             Mock(field="Hello World")),
+            (('field', 'like', "%World"),
+             lambda obj: fnmatchcase(obj.field, "*World"),
+             Mock(field="Hello World")),
+            (('field', 'like', "Hello_"),
+             lambda obj: fnmatchcase(obj.field, "Hello?"),
+             Mock(field="HelloX")),
+            (('field', 'ilike', "%World"),
+             lambda obj: fnmatchcase(obj.field, "*world"),
+             Mock(field="hello world")),
+            (('field', 'ilike', "%eLLo%"),
+             lambda obj: fnmatchcase(obj.field, "*ello*"),
+             Mock(field="hello world")),
+            (('field', 'like', "Hello%"),
+             lambda obj: False, Mock(field=9)),
+        ]
+
+        for test_tuple in filter_tuple_list:
+            filter_tuple = test_tuple[0]
+            expected_function = test_tuple[1]
+            mock_object = test_tuple[2]
+
+            function = self.parser._parse_term(filter_tuple)
+
+            self.assertTrue(callable(function))
+            self.assertEqual(function(mock_object),
+                             expected_function(mock_object))
