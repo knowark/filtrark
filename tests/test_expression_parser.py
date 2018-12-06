@@ -159,3 +159,18 @@ class TestExpressionParser(unittest.TestCase):
             self.assertTrue(callable(function))
             self.assertEqual(function(mock_object),
                              expected_function(mock_object))
+
+    def test_expression_parser_parse_contains(self):
+        filter_tuple_list = [
+            (('field', 'contains', "333"), lambda obj: '333' in obj.field,
+             Mock(field=['1', '22', '333']))]
+
+        for test_tuple in filter_tuple_list:
+            filter_tuple = test_tuple[0]
+            expected_function = test_tuple[1]
+            mock_object = test_tuple[2]
+
+            function = self.parser._parse_term(filter_tuple)
+
+            assert callable(function) is True
+            assert function(mock_object) == expected_function(mock_object)
