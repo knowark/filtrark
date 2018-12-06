@@ -4,12 +4,19 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+from re import search
+
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
+
+with open('filtrark/__init__.py') as init_file:
+    version = search(r"(\d+\.\d+\.\d+)", init_file.read()).group(1)
+    print("==============", version)
+
 
 requirements = [
     # TODO: Put package requirements here
@@ -25,7 +32,7 @@ test_requirements = [
 
 setup(
     name='filtrark',
-    version='0.4.0',
+    version=version,
     description="Build filter clauses from instruction lists",
     long_description=readme + '\n\n' + history,
     author="Esteban Echeverry",
