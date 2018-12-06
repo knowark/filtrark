@@ -2,6 +2,13 @@
 History
 =======
 
+0.5.0 (2018-12-06)
+------------------
+
+* Implement 'contains' operator in all parsers
+* Refactor 'like' and 'ilike' operators in all parsers
+
+
 0.4.0 (2018-04-24)
 ------------------
 
