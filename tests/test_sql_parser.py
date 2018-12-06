@@ -15,7 +15,8 @@ class TestSqlParser(unittest.TestCase):
         filter_tuple_list = [
             (('field', '=', 99), ('field = %s', 99)),
             (('field', 'like', 'world'), ("field LIKE %s", "world")),
-            (('field', 'ilike', 'world'), ("field ILIKE %s", "world"))
+            (('field', 'ilike', 'world'), ("field ILIKE %s", "world")),
+            (('field', 'contains', 99), ("field @> {%s}", 99))
         ]
         for filter_tuple, expected in filter_tuple_list:
             result = self.parser._parse_term(filter_tuple)

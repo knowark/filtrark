@@ -14,7 +14,8 @@ class SqlParser:
             '>=': lambda x, y: ' >= '.join([str(x), str(y)]),
             'in': lambda x, y: ' in '.join([str(x), str(y)]),
             'like': lambda x, y: "{0} LIKE {1}".format(str(x), str(y)),
-            'ilike': lambda x, y: "{0} ILIKE {1}".format(str(x), str(y))
+            'ilike': lambda x, y: "{0} ILIKE {1}".format(str(x), str(y)),
+            'contains': lambda x, y: '{0} @> {{{1}}}'.format(str(x), str(y))
         }
 
         self.binary_dict = {
