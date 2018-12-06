@@ -1,6 +1,6 @@
 from typing import List, Union, Callable
 from fnmatch import fnmatchcase
-from .type_definitions import TermTuple
+from .types import TermTuple
 
 
 class ExpressionParser:

@@ -1,5 +1,5 @@
 from typing import List, Union
-from .type_definitions import TermTuple
+from .types import TermTuple
 
 
 class StringParser:

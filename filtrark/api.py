@@ -2,7 +2,7 @@ from typing import List, Union, Tuple, Callable, Any
 from .string_parser import StringParser
 from .expression_parser import ExpressionParser
 from .sql_parser import SqlParser
-from .type_definitions import TermTuple
+from .types import TermTuple
 
 
 def string(domain: List[Union[str, TermTuple]]) -> str:
