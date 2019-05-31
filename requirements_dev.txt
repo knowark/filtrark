@@ -13,7 +13,7 @@ docutils==0.14
 flake8==3.5.0
 idna==2.6
 imagesize==1.0.0
-Jinja2==2.10
+Jinja2==2.10.1
 MarkupSafe==1.0
 mccabe==0.6.1
 mypy==0.560
@@ -27,7 +27,7 @@ pycparser==2.18
 pyflakes==1.6.0
 Pygments==2.2.0
 pytz==2018.3
-PyYAML==3.11
+PyYAML==5.1
 requests==2.20.1
 requests-toolbelt==0.8.0
 six==1.11.0
@@ -38,6 +38,6 @@ tox==2.9.1
 tqdm==4.19.6
 twine==1.9.1
 typed-ast==1.1.0
-urllib3==1.22
+urllib3==1.25.3
 virtualenv==15.1.0
 watchdog==0.8.3
