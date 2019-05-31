@@ -12,7 +12,7 @@ class SqlParser:
             '<': lambda x, y: ' < '.join([str(x), str(y)]),
             '>': lambda x, y: ' > '.join([str(x), str(y)]),
             '>=': lambda x, y: ' >= '.join([str(x), str(y)]),
-            'in': lambda x, y: ' in '.join([str(x), str(y)]),
+            'in': lambda x, y: ' IN '.join([str(x), str(y)]),
             'like': lambda x, y: "{0} LIKE {1}".format(str(x), str(y)),
             'ilike': lambda x, y: "{0} ILIKE {1}".format(str(x), str(y)),
             'contains': lambda x, y: '{0} @> {{{1}}}'.format(str(x), str(y))
@@ -68,6 +68,8 @@ class SqlParser:
 
     def _parse_term(self, term_tuple: TermTuple) -> Tuple[str, Any]:
         field, operator, value = term_tuple
+        if isinstance(value, list):
+            value = tuple(value)
         function = self.comparison_dict.get(operator)
         placeholder = '%s'
         result = (function(field, placeholder), value)

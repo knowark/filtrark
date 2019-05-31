@@ -65,3 +65,9 @@ class TestSqlParser(unittest.TestCase):
         expected = ('field = %s AND field2 <> %s', (7, 8))
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
+
+    def test_sql_parser_with_lists_parameters(self):
+        domain = [['field', 'in', [7]]]
+        expected = ('field IN %s', ((7,),))
+        result = self.parser.parse(domain)
+        self.assertEqual(result, expected)
