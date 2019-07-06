@@ -59,8 +59,8 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source filtrark setup.py test
-	coverage report -m -s
+	coverage run --branch --source filtrark setup.py test
+	coverage report -m
 
 coverage-web: ## check code coverage quickly with the default Python
 	coverage run --source filtrark setup.py test

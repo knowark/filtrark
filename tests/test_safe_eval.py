@@ -1,4 +1,5 @@
 import unittest
+import datetime
 from filtrark.safe_eval import SafeEval
 
 
@@ -31,3 +32,24 @@ class TestSafeEval(unittest.TestCase):
         for expression in forbidden_expressions:
             result = self.safe_eval(expression)
             self.assertEqual(result, expression)
+
+    def test_safe_eval_safe_builtins(self):
+        forbidden_expressions = [
+            ('>>> datetime.datetime.now()', datetime.datetime),
+            ('>>> max(1, 2)', int),
+            ('>>> float(5)', float),
+            ('>>> int(time.time()) + 3600', int)
+        ]
+
+        for expression, expected in forbidden_expressions:
+            result = self.safe_eval(expression)
+            self.assertEqual(type(result), expected)
+
+    def test_safe_eval_custom_locals(self):
+        expression = '>>> custom_function()'
+        custom_locals = {
+            'custom_function': lambda: 77
+        }
+
+        result = self.safe_eval(expression, custom_locals)
+        self.assertEqual(result, 77)
