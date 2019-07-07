@@ -1,10 +1,12 @@
-from typing import List, Union, Tuple, Any
+from typing import List, Union, Tuple, Any, Callable
 from .types import TermTuple
 
 
 class SqlParser:
 
-    def __init__(self) -> None:
+    def __init__(self, evaluator: Callable = lambda x: x) -> None:
+        self.evaluator = evaluator
+
         self.comparison_dict = {
             '=': lambda x, y:  ' = '.join([str(x), str(y)]),
             '!=': lambda x, y: ' <> '.join([str(x), str(y)]),
@@ -70,6 +72,8 @@ class SqlParser:
         field, operator, value = term_tuple
         if isinstance(value, list):
             value = tuple(value)
+        if isinstance(value, str):
+            value = self.evaluator(value)
         function = self.comparison_dict.get(operator)
         placeholder = '%s'
         result = (function(field, placeholder), value)

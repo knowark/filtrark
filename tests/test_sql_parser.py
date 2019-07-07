@@ -1,5 +1,6 @@
 import unittest
-
+from unittest.mock import Mock
+from filtrark.safe_eval import SafeEval
 from filtrark.sql_parser import SqlParser
 
 
@@ -69,5 +70,12 @@ class TestSqlParser(unittest.TestCase):
     def test_sql_parser_with_lists_parameters(self):
         domain = [['field', 'in', [7]]]
         expected = ('field IN %s', ((7,),))
+        result = self.parser.parse(domain)
+        self.assertEqual(result, expected)
+
+    def test_sql_parser_parse_evaluator(self):
+        self.parser.evaluator = SafeEval()
+        domain = [('field', '=', '>>> 3 + 4')]
+        expected = ('field = %s', (7,))
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)

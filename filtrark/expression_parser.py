@@ -7,6 +7,7 @@ class ExpressionParser:
 
     def __init__(self, evaluator: Callable = lambda x: x) -> None:
         self.evaluator = evaluator
+
         self.comparison_dict = {
             '=': lambda field, value: (
                 lambda obj: getattr(obj, field) == value),
