@@ -10,11 +10,6 @@ class TestApi(unittest.TestCase):
         self.domain = [('field', '=', 5), ('field2', '=', 4)]
         self.mock_object = Mock(field=5, field2=4)
 
-    def test_api_string(self):
-        result = filtrark.string(self.domain)
-        expected = 'field = 5 AND field2 = 4'
-        self.assertEqual(result, expected)
-
     def test_api_expression(self):
         function = filtrark.expression(self.domain)
 

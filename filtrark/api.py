@@ -1,13 +1,7 @@
 from typing import List, Union, Tuple, Callable, Any
-from .string_parser import StringParser
 from .expression_parser import ExpressionParser
 from .sql_parser import SqlParser
 from .types import TermTuple
-
-
-def string(domain: List[Union[str, TermTuple]]) -> str:
-    parser = StringParser()
-    return parser.parse(domain)
 
 
 def expression(domain: List[Union[str, TermTuple]]) -> Callable:
