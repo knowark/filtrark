@@ -5,7 +5,8 @@ from .types import TermTuple
 
 class ExpressionParser:
 
-    def __init__(self) -> None:
+    def __init__(self, evaluator: Callable = lambda x: x) -> None:
+        self.evaluator = evaluator
         self.comparison_dict = {
             '=': lambda field, value: (
                 lambda obj: getattr(obj, field) == value),
@@ -80,6 +81,7 @@ class ExpressionParser:
 
     def _parse_term(self, term_tuple: TermTuple) -> Callable:
         field, operator, value = term_tuple
+        value = self.evaluator(value)
         function = self.comparison_dict.get(operator)
         result = function(field, value)
         return result

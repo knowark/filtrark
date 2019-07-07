@@ -1,7 +1,7 @@
 import unittest
 from fnmatch import fnmatchcase
 from unittest.mock import Mock
-
+from filtrark.safe_eval import SafeEval
 from filtrark.expression_parser import ExpressionParser
 
 
@@ -172,5 +172,13 @@ class TestExpressionParser(unittest.TestCase):
 
             function = self.parser._parse_term(filter_tuple)
 
-            assert callable(function) is True
-            assert function(mock_object) == expected_function(mock_object)
+            self.assertTrue(callable(function))
+            self.assertEqual(
+                function(mock_object), expected_function(mock_object))
+
+    def test_expression_parser_parse_evaluator(self):
+        self.parser.evaluator = SafeEval()
+        domain = [('field', '=', '>>> 3 + 4')]
+        result = self.parser.parse(domain)
+        mock_object = Mock(field=7)
+        self.assertTrue(result(mock_object))
