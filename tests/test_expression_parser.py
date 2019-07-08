@@ -110,7 +110,7 @@ class TestExpressionParser(unittest.TestCase):
         mock_object.field = 7
         self.assertTrue(result(mock_object))
 
-    def test_string_parser_with_lists_of_lists(self):
+    def test_expression_parser_with_lists_of_lists(self):
         domain = [['field', '=', 7], ['field2', '!=', 8]]
 
         def expected(obj):
@@ -181,4 +181,16 @@ class TestExpressionParser(unittest.TestCase):
         domain = [('field', '=', '>>> 3 + 4')]
         result = self.parser.parse(domain)
         mock_object = Mock(field=7)
+        self.assertTrue(result(mock_object))
+
+    def test_expression_parser_namespaces(self):
+        namespaces = ['orders', 'customers']
+        domain = [('orders.customer_id', '=', 'customers.id')]
+
+        result = self.parser.parse(domain, namespaces)
+        mock_object = (
+            {'id': '77', 'customer_id': '03'}, {'id': '03', 'name': 'Joe'})
+
+        result(mock_object)
+
         self.assertTrue(result(mock_object))

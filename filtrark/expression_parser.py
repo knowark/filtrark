@@ -1,4 +1,6 @@
-from typing import List, Union, Callable
+import operator
+from typing import List, Union, Callable, Any, Dict, Tuple
+from types import SimpleNamespace
 from fnmatch import fnmatchcase
 from .types import TermTuple
 
@@ -9,27 +11,16 @@ class ExpressionParser:
         self.evaluator = evaluator
 
         self.comparison_dict = {
-            '=': lambda field, value: (
-                lambda obj: getattr(obj, field) == value),
-            '!=': lambda field, value: (
-                lambda obj: getattr(obj, field) != value),
-            '<=': lambda field, value: (
-                lambda obj: getattr(obj, field) <= value),
-            '<': lambda field, value: (
-                lambda obj: getattr(obj, field) < value),
-            '>': lambda field, value: (
-                lambda obj: getattr(obj, field) > value),
-            '>=': lambda field, value: (
-                lambda obj: getattr(obj, field) >= value),
-            'in': lambda field, value: (
-                lambda obj: getattr(obj, field) in value),
-            'like': lambda field, value: (
-                lambda obj: self._parse_like(getattr(obj, field), value)),
-            'ilike': lambda field, value: (
-                lambda obj: self._parse_like(
-                    getattr(obj, field), value, True)),
-            'contains': lambda field, value: (
-                lambda obj: value in getattr(obj, field))
+            '=': operator.eq,
+            '!=': operator.ne,
+            '<=': operator.le,
+            '<': operator.lt,
+            '>': operator.gt,
+            '>=': operator.ge,
+            'in': lambda x, y: x in y,
+            'like': lambda x, y: self._parse_like(x, y),
+            'ilike': lambda x, y: self._parse_like(x, y, True),
+            'contains': operator.contains
         }
 
         self.binary_dict = {
@@ -46,10 +37,11 @@ class ExpressionParser:
 
         self.default_join_operator = '&'
 
-    def parse(self, domain: List[Union[str, TermTuple]]) -> Callable:
+    def parse(self, domain: List[Union[str, TermTuple]],
+              namespaces: List[str] = []) -> Callable:
         if not domain:
             return lambda obj: True
-        stack = []  # type: List[Callable]
+        stack: List[Callable] = []
         for item in list(reversed(domain)):
             if isinstance(item, str) and item in self.binary_dict:
                 first_operand = stack.pop()
@@ -64,7 +56,7 @@ class ExpressionParser:
             stack = self._default_join(stack)
 
             if isinstance(item, (list, tuple)):
-                result = self._parse_term(item)
+                result = self._parse_term(item, namespaces)
                 stack.append(result)
 
         result = self._default_join(stack)[0]
@@ -80,19 +72,50 @@ class ExpressionParser:
             stack.append(function)
         return stack
 
-    def _parse_term(self, term_tuple: TermTuple) -> Callable:
+    def _parse_term(self, term_tuple: TermTuple,
+                    namespaces: List[str] = []) -> Callable:
         field, operator, value = term_tuple
         value = self.evaluator(value)
-        function = self.comparison_dict.get(operator)
-        result = function(field, value)
-        return result
+        comparator = self.comparison_dict.get(operator)
+        return self._build_filter(field, comparator, value, namespaces)
+
+    def _build_filter(self, field, comparator, value, namespaces=[]):
+        def function(obj):
+            obj_, field_, value_ = self._process_namespaces(
+                obj, field, value, namespaces)
+            return comparator(getattr(obj_, field_), value_)
+        return function
+
+    def _process_namespaces(self, obj, field, value, namespaces):
+        if not namespaces or not isinstance(obj, tuple):
+            if isinstance(obj, dict):
+                obj = SimpleNamespace(**obj)
+            return obj, field, value
+
+        base_object = (
+            SimpleNamespace(**obj[0]) if
+            isinstance(obj[0], dict) else obj[0])
+
+        for i, namespace in enumerate(namespaces):
+            namespace_object = (
+                SimpleNamespace(**obj[i]) if
+                isinstance(obj[i], dict) else obj[i])
+
+            if value.startswith(f"{namespace}."):
+                _, attribute = value.split('.')
+                value = getattr(namespace_object, attribute)
+
+            if field.startswith(f"{namespace}."):
+                _, field = field.split('.')
+                base_object = namespace_object
+
+        return base_object, field, value
 
     @staticmethod
     def _parse_like(value: str, pattern: str, insensitive=False) -> bool:
         if not isinstance(value, str):
             return False
         pattern = pattern.replace('%', '*').replace('_', '?')
-        if insensitive:
-            pattern = pattern.lower()
-            value = value.lower()
+        pattern = pattern.lower() if insensitive else pattern
+        value = value.lower() if insensitive else value
         return fnmatchcase(value, pattern)
