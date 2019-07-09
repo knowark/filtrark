@@ -79,3 +79,14 @@ class TestSqlParser(unittest.TestCase):
         expected = ('field = %s', (7,))
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
+
+    def test_sql_parser_namespaces(self):
+        namespaces = ['orders', 'customers']
+        domain = [('orders.customer_id', '=', 'customers.id')]
+
+        expected = ('orders.customer_id = %s',
+                    ('customers.id',), 'orders, customers')
+
+        result = self.parser.parse(domain, namespaces)
+
+        self.assertEqual(result, expected)

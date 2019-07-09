@@ -29,7 +29,8 @@ class SqlParser:
 
         self.default_join_operator = '&'
 
-    def parse(self, domain: List[Union[str, TermTuple]]) -> Tuple[Any, Any]:
+    def parse(self, domain: List[Union[str, TermTuple]],
+              namespaces: List[str] = []) -> Tuple:
         if not domain:
             return "TRUE", ()
         stack = []  # type: List[str]
@@ -56,7 +57,12 @@ class SqlParser:
                 params.append(result_tuple[1])
 
         result_query = str(self._default_join(stack)[0])
-        return result_query, tuple(reversed(params))
+        result = [result_query, tuple(reversed(params))]
+
+        if namespaces:
+            result.append(", ".join(namespaces))
+
+        return tuple(result)
 
     def _default_join(self, stack: List[str]) -> List[str]:
         operator = self.default_join_operator
