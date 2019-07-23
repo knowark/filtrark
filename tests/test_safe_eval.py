@@ -53,3 +53,12 @@ class TestSafeEval(unittest.TestCase):
 
         result = self.safe_eval(expression, custom_locals)
         self.assertEqual(result, 77)
+
+    def test_safe_eval_only_works_with_strings(self):
+        expression = True
+        result = self.safe_eval(expression)
+        self.assertEqual(result, expression)
+
+        expression = 55
+        result = self.safe_eval(expression)
+        self.assertEqual(result, expression)

@@ -27,8 +27,9 @@ class SafeEval:
         }
 
     def __call__(self, expression: str, locals: Dict[str, Any] = None) -> Any:
-        if not expression.startswith(self._prefix) or any(
-                character in expression for character in self._forbidden):
+        if not isinstance(expression, str) or not expression.startswith(
+                self._prefix) or any(
+                    character in expression for character in self._forbidden):
             return expression
 
         if not locals:
