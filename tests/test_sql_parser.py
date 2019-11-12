@@ -99,3 +99,28 @@ class TestSqlParser(unittest.TestCase):
             result = value(term_1, term_2)
             assert key is not None
             assert isinstance(result, str)
+
+    def test_sql_parser_jsonb_collection(self):
+        domain = [('field_1', '=', 3), '|',
+                  ('field_2', '=', True), ('field_3', '=', 7.77)]
+        jsonb_collection = 'data'
+
+        normalized_domain = self.parser._to_jsonb_domain(
+            domain, jsonb_collection)
+
+        assert normalized_domain == [
+            ("(data->>'field_1')::integer", '=', 3),
+            '|',
+            ("(data->>'field_2')::boolean", '=', True),
+            ("(data->>'field_3')::float", '=', 7.77)
+        ]
+
+    def test_sql_parser_parse_with_jsonb_collection(self):
+        domain = [('field_1', '=', 3)]
+        jsonb_collection = 'data'
+
+        result, params = self.parser.parse(
+            domain, jsonb_collection=jsonb_collection)
+
+        assert result == "(data->>'field_1')::integer = %s"
+        assert params == (3,)

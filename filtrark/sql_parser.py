@@ -30,10 +30,13 @@ class SqlParser:
         self.default_join_operator = '&'
 
     def parse(self, domain: List[Union[str, TermTuple]],
-              namespaces: List[str] = []) -> Tuple:
+              namespaces: List[str] = [], jsonb_collection=None) -> Tuple:
         if not domain:
             return "TRUE", ()
-        stack = []  # type: List[str]
+        if jsonb_collection:
+            domain = self._to_jsonb_domain(domain, jsonb_collection)
+
+        stack: List[str] = []
         params = []
         for item in list(reversed(domain)):
             if isinstance(item, str) and item in self.binary_dict:
@@ -84,3 +87,16 @@ class SqlParser:
         placeholder = '%s'
         result = (function(field, placeholder), value)
         return result
+
+    def _to_jsonb_domain(self, domain: List[Union[str, TermTuple]],
+                         collection: str) -> List[Union[str, TermTuple]]:
+        casts = {'bool': 'boolean', 'int': 'integer', 'float': 'float'}
+        normalized_domain: List[Union[str, TermTuple]] = []
+        for term in domain:
+            if isinstance(term, (tuple, list)):
+                field, operator, value = term
+                cast = casts.get(type(value).__name__,  'text')
+                field = f"(data->>'{field}')::{cast}"
+                term = (field, operator, value)
+            normalized_domain.append(term)
+        return normalized_domain
