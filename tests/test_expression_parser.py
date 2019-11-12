@@ -194,3 +194,11 @@ class TestExpressionParser(unittest.TestCase):
         result(mock_object)
 
         self.assertTrue(result(mock_object))
+
+    def test_expression_parser_with_dict(self):
+        domain = [('field', '=', 7)]
+
+        result = self.parser.parse(domain)
+        mock_object = {'field': 7}
+
+        self.assertTrue(result(mock_object))
