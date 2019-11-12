@@ -90,3 +90,12 @@ class TestSqlParser(unittest.TestCase):
         result = self.parser.parse(domain, namespaces)
 
         self.assertEqual(result, expected)
+
+    def test_sql_parser_comparison_dict(self):
+        comparison_dict = self.parser.comparison_dict
+        for key, value in comparison_dict.items():
+            term_1 = 'field'
+            term_2 = 'value'
+            result = value(term_1, term_2)
+            assert key is not None
+            assert isinstance(result, str)
