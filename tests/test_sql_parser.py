@@ -19,8 +19,9 @@ class TestSqlParser(unittest.TestCase):
             (('field', 'ilike', 'world'), ("field ILIKE %s", "world")),
             (('field', 'contains', 99), ("field @> {%s}", 99))
         ]
+        position = 1
         for filter_tuple, expected in filter_tuple_list:
-            result = self.parser._parse_term(filter_tuple)
+            result = self.parser._parse_term(filter_tuple, position)
             self.assertEqual(result, expected)
 
     def test_sql_parser_parse_single_term(self):
@@ -124,3 +125,53 @@ class TestSqlParser(unittest.TestCase):
 
         assert result == "(data->>'field_1')::integer = %s"
         assert params == (3,)
+
+    def test_sql_parser_parse_and_with_numeric_placeholders(self):
+        self.parser.placeholder = 'numeric'
+
+        domain = [('field_1', '=', 3), ('field_2', '=', 'world')]
+        jsonb_collection = 'data'
+
+        result, params = self.parser.parse(
+            domain, jsonb_collection=jsonb_collection)
+
+        assert result == (
+            "(data->>'field_1')::integer = $1 AND "
+            "(data->>'field_2')::text = $2"
+        )
+        assert params == (3, 'world')
+
+    def test_sql_parser_parse_or_with_numeric_placeholders(self):
+        self.parser.placeholder = 'numeric'
+
+        domain = ['|', ('field_1', '=', 3), ('field_2', '=', 'world')]
+        jsonb_collection = 'data'
+
+        result, params = self.parser.parse(
+            domain, jsonb_collection=jsonb_collection)
+
+        assert result == (
+            "(data->>'field_1')::integer = $1 OR "
+            "(data->>'field_2')::text = $2"
+        )
+        assert params == (3, 'world')
+
+    def test_sql_parser_parse_complex_with_numeric_placeholders(self):
+        self.parser.placeholder = 'numeric'
+
+        domain = [
+            ('field_1', '=', 3), '!', ('field_2', '=', True), '|',
+            ('field_3', '=', 7), ('field_4', '=', 'world')
+        ]
+        jsonb_collection = 'data'
+
+        result, params = self.parser.parse(
+            domain, jsonb_collection=jsonb_collection)
+
+        assert result == (
+            "(data->>'field_1')::integer = $1 AND NOT "
+            "(data->>'field_2')::boolean = $2 AND "
+            "(data->>'field_3')::integer = $3 OR "
+            "(data->>'field_4')::text = $4"
+        )
+        assert params == (3, True, 7, 'world')

@@ -4,8 +4,10 @@ from .types import TermTuple
 
 class SqlParser:
 
-    def __init__(self, evaluator: Callable = lambda x: x) -> None:
+    def __init__(self, evaluator: Callable = lambda x: x,
+                 placeholder='text') -> None:
         self.evaluator = evaluator
+        self.placeholder = placeholder
 
         self.comparison_dict = {
             '=': lambda x, y:  ' = '.join([str(x), str(y)]),
@@ -38,6 +40,8 @@ class SqlParser:
 
         stack: List[str] = []
         params = []
+        position = 0
+        terms = sum(1 if not isinstance(term, str) else 0 for term in domain)
         for item in list(reversed(domain)):
             if isinstance(item, str) and item in self.binary_dict:
                 first_operand = stack.pop()
@@ -55,9 +59,10 @@ class SqlParser:
             stack = self._default_join(stack)
 
             if isinstance(item, (list, tuple)):
-                result_tuple = self._parse_term(item)
+                result_tuple = self._parse_term(item, terms - position)
                 stack.append(result_tuple[0])
                 params.append(result_tuple[1])
+                position += 1
 
         result_query = str(self._default_join(stack)[0])
         result = [result_query, tuple(reversed(params))]
@@ -77,14 +82,16 @@ class SqlParser:
             stack.append(value)
         return stack
 
-    def _parse_term(self, term_tuple: TermTuple) -> Tuple[str, Any]:
+    def _parse_term(self, term_tuple: TermTuple,
+                    position: int) -> Tuple[str, Any]:
         field, operator, value = term_tuple
         if isinstance(value, list):
             value = tuple(value)
         if isinstance(value, str):
             value = self.evaluator(value)
         function = self.comparison_dict.get(operator)
-        placeholder = '%s'
+        placeholder = (
+            f'${position}' if self.placeholder == 'numeric' else '%s')
         result = (function(field, placeholder), value)
         return result
 
