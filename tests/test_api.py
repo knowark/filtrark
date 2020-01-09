@@ -21,5 +21,5 @@ class TestApi(unittest.TestCase):
 
     def test_api_sql(self):
         result = filtrark.sql(self.domain)
-        expected = ('field = %s AND field2 = %s', (5, 4))
+        expected = ('field = $1 AND field2 = $2', (5, 4))
         self.assertEqual(result, expected)

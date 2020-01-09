@@ -9,6 +9,7 @@ def expression(domain: List[Union[str, TermTuple]]) -> Callable:
     return parser.parse(domain)
 
 
-def sql(domain: List[Union[str, TermTuple]]) -> Tuple[Any, Any]:
-    parser = SqlParser()
+def sql(domain: List[Union[str, TermTuple]],
+        placeholder='numeric') -> Tuple:
+    parser = SqlParser(placeholder=placeholder)
     return parser.parse(domain)

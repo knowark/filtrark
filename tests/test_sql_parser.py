@@ -7,7 +7,7 @@ from filtrark.sql_parser import SqlParser
 class TestSqlParser(unittest.TestCase):
 
     def setUp(self):
-        self.parser = SqlParser()
+        self.parser = SqlParser(placeholder='text')
 
     def test_sql_parser_object_creation(self):
         self.assertTrue(isinstance(self.parser, SqlParser))

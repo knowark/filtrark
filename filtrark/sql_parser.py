@@ -5,7 +5,7 @@ from .types import TermTuple
 class SqlParser:
 
     def __init__(self, evaluator: Callable = lambda x: x,
-                 placeholder='text') -> None:
+                 placeholder: str = 'numeric') -> None:
         self.evaluator = evaluator
         self.placeholder = placeholder
 
