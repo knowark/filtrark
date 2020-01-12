@@ -70,7 +70,7 @@ class TestSqlParser(unittest.TestCase):
 
     def test_sql_parser_with_lists_parameters(self):
         domain = [['field', 'in', [7]]]
-        expected = ('field IN %s', ((7,),))
+        expected = ('field = ANY(%s)', ([7],))
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
 
