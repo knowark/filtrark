@@ -4,7 +4,7 @@
 
 __author__ = """Esteban Echeverry"""
 __email__ = 'eecheverry@nubark.com'
-__version__ = '0.9.0'
+__version__ = '0.9.1'
 
 
 from .api import expression, sql
