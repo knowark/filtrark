@@ -6,8 +6,8 @@ from typing import Dict, Any
 
 class SafeEval:
 
-    def __init__(self) -> None:
-        self._prefix = '>>>'
+    def __init__(self, prefix: str = None) -> None:
+        self._prefix = '>>>' if prefix is None else prefix
         self._globals = {
             '__builtins__': None
         }

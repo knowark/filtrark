@@ -2,6 +2,12 @@
 History
 =======
 
+0.9.1 (2020-07-05)
+------------------
+
+* Use poetry for dependency managemente
+* Add optional 'prefix' parameter to SafeEval
+
 0.5.0 (2018-12-06)
 ------------------
 

@@ -23,6 +23,11 @@ class TestSafeEval(unittest.TestCase):
         result = self.safe_eval('>>> 2 + 2')
         self.assertEqual(result, 4)
 
+    def test_safe_custom_prefix(self):
+        safe_eval = SafeEval(prefix='')
+        result = safe_eval('2 + 2')
+        self.assertEqual(result, 4)
+
     def test_safe_eval_forbidden_characters(self):
         forbidden_expressions = [
             '>>> __name__',
@@ -56,9 +61,9 @@ class TestSafeEval(unittest.TestCase):
 
     def test_safe_eval_only_works_with_strings(self):
         expression = True
-        result = self.safe_eval(expression)
+        result = self.safe_eval(expression)  # type: ignore
         self.assertEqual(result, expression)
 
         expression = 55
-        result = self.safe_eval(expression)
+        result = self.safe_eval(expression)  # type: ignore
         self.assertEqual(result, expression)

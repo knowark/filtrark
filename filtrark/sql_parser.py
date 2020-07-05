@@ -87,7 +87,7 @@ class SqlParser:
         field, operator, value = term_tuple
         if isinstance(value, str):
             value = self.evaluator(value)
-        function = self.comparison_dict.get(operator)
+        function = self.comparison_dict[operator]
         placeholder = (
             f'${position}' if self.placeholder == 'numeric' else '%s')
         result = (function(field, placeholder), value)
