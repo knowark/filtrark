@@ -1,10 +1,10 @@
-from typing import List, Union, Tuple, Any, Callable
-from .types import TermTuple
+from typing import List, Dict, Union, Tuple, Any, Callable
+from .types import QueryDomain, TermTuple
 
 
 class SqlParser:
 
-    def __init__(self, evaluator: Callable = lambda x: x,
+    def __init__(self, evaluator: Callable = lambda x, _: x,
                  placeholder: str = 'numeric') -> None:
         self.evaluator = evaluator
         self.placeholder = placeholder
@@ -31,7 +31,8 @@ class SqlParser:
 
         self.default_join_operator = '&'
 
-    def parse(self, domain: List[Union[str, TermTuple]],
+    def parse(self, domain: QueryDomain,
+              context: Dict[str, Any] = None,
               namespaces: List[str] = [], jsonb_collection=None) -> Tuple:
         if not domain:
             return "TRUE", ()
@@ -59,7 +60,8 @@ class SqlParser:
             stack = self._default_join(stack)
 
             if isinstance(item, (list, tuple)):
-                result_tuple = self._parse_term(item, terms - position)
+                result_tuple = self._parse_term(
+                    item, context, position=terms - position)
                 stack.append(result_tuple[0])
                 params.append(result_tuple[1])
                 position += 1
@@ -83,17 +85,18 @@ class SqlParser:
         return stack
 
     def _parse_term(self, term_tuple: TermTuple,
-                    position: int) -> Tuple[str, Any]:
+                    context: Dict[str, Any] = None,
+                    position: int = 0) -> Tuple[str, Any]:
         field, operator, value = term_tuple
         if isinstance(value, str):
-            value = self.evaluator(value)
+            value = self.evaluator(value, context)
         function = self.comparison_dict[operator]
         placeholder = (
             f'${position}' if self.placeholder == 'numeric' else '%s')
         result = (function(field, placeholder), value)
         return result
 
-    def _to_jsonb_domain(self, domain: List[Union[str, TermTuple]],
+    def _to_jsonb_domain(self, domain: QueryDomain,
                          collection: str) -> List[Union[str, TermTuple]]:
         casts = {'bool': 'boolean', 'int': 'integer', 'float': 'float'}
         normalized_domain: List[Union[str, TermTuple]] = []

@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import Mock
+from typing import cast
+from filtrark.types import QueryDomain
 from filtrark.safe_eval import SafeEval
 from filtrark.sql_parser import SqlParser
 
@@ -21,7 +22,7 @@ class TestSqlParser(unittest.TestCase):
         ]
         position = 1
         for filter_tuple, expected in filter_tuple_list:
-            result = self.parser._parse_term(filter_tuple, position)
+            result = self.parser._parse_term(filter_tuple, position=position)
             self.assertEqual(result, expected)
 
     def test_sql_parser_parse_single_term(self):
@@ -63,13 +64,13 @@ class TestSqlParser(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_sql_parser_with_lists_of_lists(self):
-        domain = [['field', '=', 7], ['field2', '!=', 8]]
+        domain = cast(QueryDomain, [['field', '=', 7], ['field2', '!=', 8]])
         expected = ('field = %s AND field2 <> %s', (7, 8))
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
 
     def test_sql_parser_with_lists_parameters(self):
-        domain = [['field', 'in', [7]]]
+        domain = cast(QueryDomain, [['field', 'in', [7]]])
         expected = ('field = ANY(%s)', ([7],))
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
@@ -81,6 +82,14 @@ class TestSqlParser(unittest.TestCase):
         result = self.parser.parse(domain)
         self.assertEqual(result, expected)
 
+    def test_sql_parser_evaluator_context(self):
+        self.parser.evaluator = SafeEval()
+        domain = [('field', '=', '>>> 3 + value')]
+        expected = ('field = %s', (7,))
+        context = {'value': 4}
+        result = self.parser.parse(domain, context)
+        self.assertEqual(result, expected)
+
     def test_sql_parser_namespaces(self):
         namespaces = ['orders', 'customers']
         domain = [('orders.customer_id', '=', 'customers.id')]
@@ -88,7 +97,7 @@ class TestSqlParser(unittest.TestCase):
         expected = ('orders.customer_id = %s',
                     ('customers.id',), 'orders, customers')
 
-        result = self.parser.parse(domain, namespaces)
+        result = self.parser.parse(domain, namespaces=namespaces)
 
         self.assertEqual(result, expected)
 

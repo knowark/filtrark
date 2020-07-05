@@ -1,4 +1,6 @@
-from typing import NewType, List, Tuple, Union, Callable
+from typing import Tuple, Union, Sequence
 
 
-TermTuple = Tuple[str, str, Union[str, float]]
+TermTuple = Tuple[str, str, Union[str, int, float, bool, list, tuple]]
+
+QueryDomain = Sequence[Union[str, TermTuple]]

@@ -1,6 +1,8 @@
+from typing import cast
 import unittest
 from fnmatch import fnmatchcase
 from unittest.mock import Mock
+from filtrark.types import QueryDomain
 from filtrark.safe_eval import SafeEval
 from filtrark.expression_parser import ExpressionParser
 
@@ -37,8 +39,7 @@ class TestExpressionParser(unittest.TestCase):
                 function(mock_object), expected_function(mock_object))
 
     def test_expression_parser_parse_single_term(self):
-        domain = [('field', '=', 7)]
-        expected = 'field = 7'
+        domain: QueryDomain = [('field', '=', 7)]
 
         def expected(obj):
             return getattr(obj, 'field') == 7
@@ -111,7 +112,7 @@ class TestExpressionParser(unittest.TestCase):
         self.assertTrue(result(mock_object))
 
     def test_expression_parser_with_lists_of_lists(self):
-        domain = [['field', '=', 7], ['field2', '!=', 8]]
+        domain = cast(QueryDomain, [['field', '=', 7], ['field2', '!=', 8]])
 
         def expected(obj):
             return (obj.field == 7 and obj.field2 != 8)
@@ -183,11 +184,19 @@ class TestExpressionParser(unittest.TestCase):
         mock_object = Mock(field=7)
         self.assertTrue(result(mock_object))
 
+    def test_expression_parser_evaluator_context(self):
+        self.parser.evaluator = SafeEval()
+        domain = [('field', '=', '>>> 3 + value')]
+        context = {'value': 4}
+        result = self.parser.parse(domain, context)
+        mock_object = Mock(field=7)
+        self.assertTrue(result(mock_object))
+
     def test_expression_parser_namespaces(self):
         namespaces = ['orders', 'customers']
         domain = [('orders.customer_id', '=', 'customers.id')]
 
-        result = self.parser.parse(domain, namespaces)
+        result = self.parser.parse(domain, namespaces=namespaces)
         mock_object = (
             {'id': '77', 'customer_id': '03'}, {'id': '03', 'name': 'Joe'})
 

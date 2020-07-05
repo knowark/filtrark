@@ -2,12 +2,12 @@ import operator
 from typing import List, Union, Callable, Any, Dict, Tuple
 from types import SimpleNamespace
 from fnmatch import fnmatchcase
-from .types import TermTuple
+from .types import TermTuple, QueryDomain
 
 
 class ExpressionParser:
 
-    def __init__(self, evaluator: Callable = lambda x: x) -> None:
+    def __init__(self, evaluator: Callable = lambda x, _: x) -> None:
         self.evaluator = evaluator
 
         self.comparison_dict = {
@@ -37,7 +37,8 @@ class ExpressionParser:
 
         self.default_join_operator = '&'
 
-    def parse(self, domain: List[Union[str, TermTuple]],
+    def parse(self, domain: QueryDomain,
+              context: Dict[str, Any] = None,
               namespaces: List[str] = []) -> Callable:
         if not domain:
             return lambda obj: True
@@ -56,7 +57,7 @@ class ExpressionParser:
             stack = self._default_join(stack)
 
             if isinstance(item, (list, tuple)):
-                result = self._parse_term(item, namespaces)
+                result = self._parse_term(item, context, namespaces)
                 stack.append(result)
 
         result = self._default_join(stack)[0]
@@ -73,9 +74,10 @@ class ExpressionParser:
         return stack
 
     def _parse_term(self, term_tuple: TermTuple,
+                    context: Dict[str, Any] = None,
                     namespaces: List[str] = []) -> Callable:
         field, operator, value = term_tuple
-        value = self.evaluator(value)
+        value = self.evaluator(value, context)
         comparator = self.comparison_dict.get(operator)
         return self._build_filter(field, comparator, value, namespaces)
 

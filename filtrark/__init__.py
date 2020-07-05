@@ -2,8 +2,8 @@
 
 """Top-level package for Filtrark."""
 
-__author__ = """Esteban Echeverry"""
-__email__ = 'eecheverry@nubark.com'
+__author__ = """Knowark"""
+__email__ = 'info@knowark.com'
 __version__ = '0.9.1'
 
 
