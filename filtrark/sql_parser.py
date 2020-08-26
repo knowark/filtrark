@@ -5,9 +5,11 @@ from .types import QueryDomain, TermTuple
 class SqlParser:
 
     def __init__(self, evaluator: Callable = lambda x, _: x,
-                 placeholder: str = 'numeric') -> None:
+                 placeholder: str = 'numeric', 
+                 jsonb_collection: str = '') -> None:
         self.evaluator = evaluator
         self.placeholder = placeholder
+        self.jsonb_collection = jsonb_collection
 
         self.comparison_dict = {
             '=': lambda x, y:  ' = '.join([str(x), str(y)]),
@@ -36,6 +38,8 @@ class SqlParser:
               namespaces: List[str] = [], jsonb_collection=None) -> Tuple:
         if not domain:
             return "TRUE", ()
+        
+        jsonb_collection = jsonb_collection or self.jsonb_collection
         if jsonb_collection:
             domain = self._to_jsonb_domain(domain, jsonb_collection)
 
