@@ -4,7 +4,7 @@
 
 __author__ = """Knowark"""
 __email__ = 'info@knowark.com'
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 
 
 from .api import expression, sql
