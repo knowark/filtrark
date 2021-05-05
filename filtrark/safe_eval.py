@@ -5,11 +5,10 @@ from typing import Dict, Any
 
 
 class SafeEval:
-
     def __init__(self, prefix: str = None) -> None:
         self._prefix = '>>>' if prefix is None else prefix
-        self._globals = {
-            '__builtins__': None
+        self._globals: Dict = {
+            '__builtins__': {}
         }
         self._forbidden = ['__', '**']
         self._safe_builtins = {
@@ -35,7 +34,7 @@ class SafeEval:
         if not locals:
             locals = {}
 
-        expression = expression.replace(self._prefix, '').strip()
+        expression = expression[len(self._prefix):].strip()
         locals.update(self._safe_builtins)
 
         return eval(expression, self._globals, locals)

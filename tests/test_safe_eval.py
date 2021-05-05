@@ -12,7 +12,7 @@ class TestSafeEval(unittest.TestCase):
         self.assertTrue(isinstance(self.safe_eval, SafeEval))
 
     def test_safe_eval_doesnt_have_globals_or_locals_by_default(self):
-        with self.assertRaises(TypeError) as e:
+        with self.assertRaises(NameError) as e:
             self.safe_eval('>>> dir()')
 
     def test_safe_eval_doesnt_evaluate_unprefixed_strings(self):
